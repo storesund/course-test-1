@@ -104,6 +104,7 @@ print_results(cv_results)
 read_logfile("logfilename.log")
             
 def pipeline():
+    """This is the main entry point function"""
     #file_path = np1.array(df1[['DATA_PATH']])
     X_train, X_test, y_train, y_test = data_processing(file_path, SplitRatio, limit)
     cv_results = model_training(X_train, y_train, CV)
