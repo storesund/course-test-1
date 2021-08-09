@@ -25,7 +25,7 @@ print(SplitRatio) #these have 0 in fornt when reading from CSV, dont know why
 print(limit)
 print(CV)
 #so ended up reassigning these variables to correct numbers
-SplitRatio=0.8
+SplitRatio=0.9
 limit=12000
 CV=5
 print(SplitRatio)
