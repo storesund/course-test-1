@@ -1,1 +1,16 @@
 # Edit this config file or create a new one of your liking
+[DATA]
+DATA_PATH = "Dataset/Toyota.csv"
+TEST_PATH = "Dataset/Toyota.csv"
+OUTPUT_PATH = "Datasets/score_output.csv"
+TRAIN_HEADER = 14
+
+[COLS]
+# columns we want to keep
+X_VAR = ["Age", "KM"]
+Y_VAR = "Price"
+
+[MODEL]
+SplitRatio = 0.8
+CostLimit = 12000
+CV = 5

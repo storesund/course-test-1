@@ -5,8 +5,11 @@ import numpy as np
 from sklearn import tree
 from sklearn.model_selection import cross_validate, cross_val_predict
 from sklearn.model_selection import train_test_split
+from pathlib import Path
 global X_train, y_train, X, y, X_test, y_test
 import logging
+import click
+
 
 logging.basicConfig(filename="logfilename.log",
                     level=logging.DEBUG,
@@ -15,34 +18,17 @@ logging.basicConfig(filename="logfilename.log",
                     filemode='w',
                     force = True)
 
-df1 = pd1.read_csv('Config.csv', sep=',')
-print(df1)
-print(df1["DATA_PATH"])
-SplitRatio=df1["SplitRatio"]
-limit=df1["CostLimit"]
-CV=df1["CV"]
-print(SplitRatio) #these have 0 in fornt when reading from CSV, dont know why
-print(limit)
-print(CV)
-#so ended up reassigning these variables to correct numbers
-SplitRatio=0.75
-limit=12000
-CV=5
-print(SplitRatio)
-print(limit)
-print(CV)
-
-def read_logfile(log_filepath):
+def read_logfile(log_filepath: str):
     with open(log_filepath) as f:
         for line in f:
             print(line)
 
 # Created a data processing function
 
-def data_processing(filepath, SplitRatio, limit):
+def data_processing(filepath: str, SplitRatio: float, limit: float):
     """This is the function to select the relevent data and splitting data into test and train"""
     try:
-        print("INFO: File path exists")
+        logging.info("INFO: File path exists")
         df = pd.read_csv(filepath, sep=',')
         # Shuffle the datarows randomly, to be sure that the ordering of rows is somewhat random:
         df = df.sample(frac=1)
@@ -86,25 +72,34 @@ def print_results(cv_results):
     P_pos   = cv_results['test_precision']
     R_pos   = cv_results['test_recall']
     A   = cv_results['test_accuracy']
-    print('\n-------------- Scores ---------------')
-    print('Average F1:\t {:.2f} (+/- {:.2f})'.format(F1_pos.mean(), F1_pos.std()))
-    print('Average Precision (y positive):\t {:.2f} (+/- {:.2f})'.format(P_pos.mean(), P_pos.std()))
-    print('Average Recall (y positive):\t {:.2f} (+/- {:.2f})'.format(R_pos.mean(), R_pos.std()))
-    print('Average Accuracy:\t {:.2f} (+/- {:.2f})'.format(A.mean(), A.std()))
+    logging.info('\n-------------- Scores ---------------')
+    logging.info('Average F1:\t {:.2f} (+/- {:.2f})'.format(F1_pos.mean(), F1_pos.std()))
+    logging.info('Average Precision (y positive):\t {:.2f} (+/- {:.2f})'.format(P_pos.mean(), P_pos.std()))
+    logging.info('Average Recall (y positive):\t {:.2f} (+/- {:.2f})'.format(R_pos.mean(), R_pos.std()))
+    logging.info('Average Accuracy:\t {:.2f} (+/- {:.2f})'.format(A.mean(), A.std()))
 
-file_path = "Dataset/Toyota.csv"
-#if Path(file_path).exists():  #doesnt work
-print("INFO: File path exists")
-X_train, X_test, y_train, y_test = data_processing(file_path, SplitRatio, limit)
-cv_results = model_training(X_train, y_train, CV)
-print_results(cv_results)
-#else:
-#print("WARNING: File path doesn't exist")
+@click.command()
+@click.option('--limit', default=None)
 
-read_logfile("logfilename.log")
-            
-def pipeline():
-    #file_path = np1.array(df1[['DATA_PATH']])
-    X_train, X_test, y_train, y_test = data_processing(file_path, SplitRatio, limit)
-    cv_results = model_training(X_train, y_train, CV)
-    print_results(cv_results)
+def model(limit):
+    df1 = pd1.read_csv('Config.csv', sep=',')
+    #printing configuration file
+    logging.info(df1)
+    #assigning variables
+    file_path =df1["DATA_PATH"][0]
+    SplitRatio=df1["SplitRatio"][0] 
+    if limit is None:
+        limit=df1["CostLimit"][0]
+    limit=int(limit)
+    CV=df1["CV"][0]   
+    if Path(file_path).exists():
+        logging.info('INFO: File path exists')
+        X_train, X_test, y_train, y_test = data_processing(file_path, SplitRatio, limit)
+        cv_results = model_training(X_train, y_train, CV)
+        print_results(cv_results)
+    else:
+        logging.info('WARNING: File path does not exist')
+    read_logfile("logfilename.log")
+
+if __name__ == '__main__':
+    model()
