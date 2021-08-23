@@ -1,2 +1,2 @@
 SplitRatio,CostLimit,CV,DATA_PATH
-0.8,12000,5,Dataset/Toyota.csv
+0.99,00,5,Dataset/Toyota.csv

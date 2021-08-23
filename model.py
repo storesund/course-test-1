@@ -9,6 +9,7 @@ from pathlib import Path
 global X_train, y_train, X, y, X_test, y_test
 import logging
 import click
+import pickle
 
 
 logging.basicConfig(filename="logfilename.log",

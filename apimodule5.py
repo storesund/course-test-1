@@ -9,7 +9,7 @@ from pathlib import Path
 import logging
 import click
 import pickle
-global mdl
+
 app=FastAPI()
 
 logging.basicConfig(filename="apifilename.log",
@@ -28,6 +28,7 @@ def read_logfile(log_filepath: str):
 @app.on_event("startup")
 def loadmodel():
     #calling pickle 
+    global mdl
     with open("arun_model.pkl", "rb") as my_stream:
         mdl=pickle.load(my_stream)
 
@@ -36,12 +37,15 @@ class toyotacar(BaseModel):
     km: int
 
 @app.post("/arun")
-def make_prediction(user_car: ToyotaCar):
+def make_prediction(user_car: toyotacar):
     user_car_dict = user_car.dict()
     user_age=user_car_dict["age"]
+    logging.info(user_age)
     user_km=user_car_dict["km"]
+    logging.info(user_km)
     predicted_cost= mdl.predict([[user_age, user_km]])
     logging.info("cost predicted from model")
+    logging.info(predicted_cost)
     predicted_cost=predicted_cost[0]
     logging.info("cost predicted and ready to display, first value from array")
     logging.info(predicted_cost)

@@ -39,6 +39,9 @@ def data_processing(filepath: str, SplitRatio: float, limit: float):
         # Select the columns/features from the Pandas dataframe that we want to use in the model:
         X = np.array(df[['Age', 'KM']])  # we only take the first two features.
         y = 1*np.array(df['Price']>limit)
+        y=np.array(df['Price'])
+        logging.info(y)
+        logging.info(limit)
         X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=SplitRatio)
         return X_train, X_test, y_train, y_test
     except FileNotFoundError:
@@ -53,6 +56,10 @@ def model_develop(X_train, y_train):
     """This function is to train the model, with training data and returns the model"""
     mdl=LinearRegression()
     # Train the model using the data we have prepared:
+    logging.info("printing X_train")
+    logging.info(X_train)
+    logging.info("printing y_train")
+    logging.info(y_train)
     mdl.fit(X_train, y_train)
     return mdl
 
@@ -83,6 +90,7 @@ def model(limit):
         modeldeveloped = model_develop(X_train, y_train)
         logging.info('Model Trained')
         savepicklemdl(modeldeveloped)
+        logging.info(modeldeveloped)
         logging.info('Model Exported')
     else:
         logging.info('WARNING: File path does not exist')
